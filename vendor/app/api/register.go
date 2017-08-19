@@ -1,12 +1,11 @@
-package controller
+package api
 
 import (
 	"net/http"
 	"io/ioutil"
 	"log"
 	"encoding/json"
-	"app/database"
-	"app/api"
+	"app/db"
 )
 
 type RegisterInfo struct {
@@ -38,7 +37,7 @@ func init() {
 			return
 		}
 		//验证是否已注册
-		rows, err := database.SQL.Query("SELECT user.uid FROM user WHERE user.mobile=?", info.Mobile)
+		rows, err := db.DB.Query("SELECT user.uid FROM user WHERE user.mobile=?", info.Mobile)
 		if rows.Next() {
 			log.Println("this mobile is registered")
 			return
@@ -49,9 +48,9 @@ func init() {
 			return
 		}
 		//插入数据
-		result, err := database.SQL.Exec("INSERT INTO user(user.mobile, user.pwd)VALUES (?,?)", info.Mobile, info.Pwd)
+		result, err := db.DB.Exec("INSERT INTO user(user.mobile, user.pwd)VALUES (?,?)", info.Mobile, info.Pwd)
 		if err != nil {
-			api.E(writer, err)
+			sendError(writer, err)
 			return
 		}
 		newUid, err := result.LastInsertId()

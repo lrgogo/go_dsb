@@ -17,7 +17,7 @@ type Result struct {
 	Data interface{} `json:"data,omitempty"`
 }
 
-func E(w http.ResponseWriter, err error) {
+func sendError(w http.ResponseWriter, err error) {
 	log.Println(err)
 	var r = &Result{
 		Code: SERVER_ERROR,
@@ -31,3 +31,19 @@ func E(w http.ResponseWriter, err error) {
 	log.Println(string(j))
 	w.Write(j)
 }
+
+func sendSuccess(w http.ResponseWriter, data interface{}) {
+	var r = &Result{
+		Code: SUCCESS,
+		Msg:  "",
+		Data: data,
+	}
+	j, err := json.Marshal(r)
+	if err != nil {
+		return
+	}
+	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
+	log.Println(string(j))
+	w.Write(j)
+}
+
