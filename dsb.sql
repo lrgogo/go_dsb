@@ -8,11 +8,11 @@ CREATE TABLE `user`
   COMMENT '手机号=用户名',
   `pwd`         VARCHAR(20) NOT NULL
   COMMENT '密码',
-  `profession`  VARCHAR(20) NOT NULL
+  `profession`  VARCHAR(20)
   COMMENT '职位',
-  `business`    VARCHAR(20) NOT NULL
+  `business`    VARCHAR(20)
   COMMENT '业务范围',
-  `corp`        VARCHAR(30) NOT NULL
+  `corp`        VARCHAR(30)
   COMMENT '公司',
   `create_time` TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP
   COMMENT '创建时间',
