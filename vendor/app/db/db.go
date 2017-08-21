@@ -9,7 +9,8 @@ import (
 var mydb *sql.DB
 
 func Open() {
-	mydb, err := sql.Open("mysql",
+	var err error
+	mydb, err = sql.Open("mysql",
 		"root:123456@tcp(127.0.0.1:3306)/dsb")
 	if err != nil {
 		log.Fatal(err)
