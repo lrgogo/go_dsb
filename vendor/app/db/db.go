@@ -6,7 +6,7 @@ import (
 	"log"
 )
 
-var DB *sql.DB
+var db *sql.DB
 
 func Open() {
 	DB, err := sql.Open("mysql",
@@ -19,4 +19,8 @@ func Open() {
 		log.Fatal(err)
 	}
 	log.Println("db open ping success")
+}
+
+func Close() {
+	db.Close()
 }

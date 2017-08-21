@@ -12,7 +12,7 @@ import (
 
 func main() {
 	db.Open()
-	defer db.DB.Close()
+	defer db.Close()
 
 	api.Load()
 
