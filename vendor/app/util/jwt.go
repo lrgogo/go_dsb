@@ -8,7 +8,7 @@ import (
 	"errors"
 )
 
-func verifyJWT(str string) int64 {
+func VerifyJWT(str string) int64 {
 	t, err := jwt.Parse(str, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
@@ -18,7 +18,7 @@ func verifyJWT(str string) int64 {
 	CheckError(err)
 
 	if claims, ok := t.Claims.(jwt.MapClaims); ok && t.Valid {
-		uid := int64(claims["uid"])
+		uid := int64(claims["uid"].(int64))
 		exp := int64(claims["exp"].(float64))
 		if exp <= time.Now().Unix() {
 			CheckError(errors.New("token exp is wrong"))
@@ -28,7 +28,7 @@ func verifyJWT(str string) int64 {
 	return -1
 }
 
-func createAccessJWT(uid int64) string {
+func CreateAccessJWT(uid int64) string {
 	t := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"uid": uid,
 		"exp": time.Now().Add(time.Hour * 24 * 3).Unix(), //3天
@@ -39,7 +39,7 @@ func createAccessJWT(uid int64) string {
 	return token
 }
 
-func createRefreshJWT(uid int64) string {
+func CreateRefreshJWT(uid int64) string {
 	t := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"uid": uid,
 		"exp": time.Now().Add(time.Hour * 24 * 30).Unix(), //30天

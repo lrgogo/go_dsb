@@ -6,16 +6,16 @@ import (
 	"io/ioutil"
 	"encoding/json"
 	"app/db"
+	"app/util"
 )
 
-type LoginInfo struct {
-	Mobile string `json:"mobile"`
-	Pwd    string `json:"pwd"`
-}
-
-type LoginedInfo struct {
-	Token string `json:"token"`
-	User  *db.User `json:"user"`
+type LoginUserInfo struct {
+	Token      string `json:"token"`
+	Uid        int64 `json:"uid"`
+	Mobile     string `json:"mobile"`
+	Profession string `json:"profession"`
+	Corp       string `json:"corp"`
+	Business   string `json:"business"`
 }
 
 func init() {
@@ -26,36 +26,40 @@ func init() {
 			return
 		}
 		//解析JSON
-		arr, err := ioutil.ReadAll(request.Body)
+		body, err := ioutil.ReadAll(request.Body)
 		if err != nil {
 			return
 		}
-		log.Println(string(arr))
-		info := &LoginInfo{}
-		err = json.Unmarshal(arr, info)
+		log.Println(string(body))
+		var kv map[string]string
+		err = json.Unmarshal(body, &kv)
 		if err != nil {
 			return
 		}
+		mobile := kv["mobile"]
+		pwd := kv["pwd"]
 		//信息是否为空
-		if info.Mobile == "" || info.Pwd == "" {
+		if mobile == "" || pwd == "" {
 			return
 		}
 		//验证是否已注册
-		user := db.User{}
-		row, err := db.DB.Query("SELECT * FROM user WHERE user.mobile=?", info.Mobile)
-		if !row.Next() {
+		user, uid := db.Login(mobile, pwd)
+		if uid == -1 {
 			log.Println(err, "this mobile is not register")
 			return
 		}
-		row.Scan(&user.Mobile, &user.Pwd)
-		if info.Pwd != user.Pwd {
+		if uid == -2 {
 			log.Println("password is wrong")
 			return
 		}
-		loginedInfo := &LoginedInfo{
-			Token: "abc",
-			User:  &user,
+		loginUserInfo := &LoginUserInfo{
+			Token:      util.CreateAccessJWT(uid),
+			Uid:        user.Uid,
+			Mobile:     user.Mobile,
+			Profession: user.Profession,
+			Business:   user.Business,
+			Corp:       user.Corp,
 		}
-		sendSuccess(writer, loginedInfo)
+		sendSuccess(writer, loginUserInfo)
 	})
 }
