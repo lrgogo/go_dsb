@@ -18,7 +18,7 @@ func VerifyJWT(str string) int64 {
 	CheckError(err)
 
 	if claims, ok := t.Claims.(jwt.MapClaims); ok && t.Valid {
-		uid := int64(claims["uid"].(int64))
+		uid := int64(claims["uid"].(float64))
 		exp := int64(claims["exp"].(float64))
 		if exp <= time.Now().Unix() {
 			CheckError(errors.New("token exp is wrong"))

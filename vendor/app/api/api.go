@@ -47,3 +47,17 @@ func sendSuccess(w http.ResponseWriter, data interface{}) {
 	w.Write(j)
 }
 
+func sendSuccessNoData(w http.ResponseWriter) {
+	var r = &Result{
+		Code: SUCCESS,
+		Msg:  "",
+	}
+	j, err := json.Marshal(r)
+	if err != nil {
+		return
+	}
+	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
+	log.Println(string(j))
+	w.Write(j)
+}
+

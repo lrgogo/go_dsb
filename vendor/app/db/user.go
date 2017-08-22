@@ -40,7 +40,7 @@ func Login(mobile, pwd string) (*User, int64) {
 		Corp:       corp,
 		Business:   business,
 	}
-	return user, 0
+	return user, uid
 }
 
 func Register(mobile, pwd string) int64 {
@@ -70,11 +70,11 @@ func Register(mobile, pwd string) int64 {
 }
 
 func CompleteInfo(uid int64, profession, business, corp string) int64 {
-	stmt, err := mydb.Prepare("SELECT user.uid FROM user WHERE user.uid=?")
-	defer stmt.Close()
+	stmt1, err := mydb.Prepare("SELECT user.uid FROM user WHERE user.uid=?")
+	defer stmt1.Close()
 	util.CheckError(err)
 
-	rows, err := stmt.Query(uid)
+	rows, err := stmt1.Query(uid)
 	defer rows.Close()
 	util.CheckError(err)
 
@@ -82,11 +82,11 @@ func CompleteInfo(uid int64, profession, business, corp string) int64 {
 		return -1
 	}
 
-	stmt, err = mydb.Prepare("INSERT INTO user(user.profession, user.business, user.corp) VALUES (?,?,?)")
-	defer stmt.Close()
+	stmt2, err := mydb.Prepare("UPDATE user SET user.profession=?, user.business=?, user.corp=? WHERE user.uid=?")
+	defer stmt2.Close()
 	util.CheckError(err)
 
-	res, err := stmt.Exec(profession, business, corp)
+	res, err := stmt2.Exec(profession, business, corp, uid)
 	util.CheckError(err)
 
 	lastId, err := res.LastInsertId() //uid要用int64
